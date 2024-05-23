@@ -61,3 +61,9 @@ class MarkDeliverableCompletion(BaseModel):
     completed_deliverable_id: str
     remarks: str
     marked_on: datetime
+
+
+class PasswordChangeRequest(BaseModel):
+    username: str
+    password_old: str
+    password_new: str
