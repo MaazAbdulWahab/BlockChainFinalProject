@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from enum import Enum
 
@@ -67,3 +67,11 @@ class PasswordChangeRequest(BaseModel):
     username: str
     password_old: str
     password_new: str
+
+
+class SignUpContractor(BaseModel):
+    username: str
+    password: str
+    role: str = "CONTRACTOR"
+    licenses: List[str]
+    documents: List[str]

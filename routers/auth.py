@@ -1,9 +1,11 @@
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
-from utils.user.user_utils import finduser
+from utils.user.user_utils import finduser, create_contractor
 from utils.auth.jwt import create_access_token
-from typings import PasswordChangeRequest
+from typings import PasswordChangeRequest, SignUpContractor
+import uuid
+from passlib.hash import pbkdf2_sha256
 
 
 authentication_router = APIRouter(
@@ -24,3 +26,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     access_token = create_access_token({"id": foundUser["id"]})
     return {"access_token": access_token}
+
+
+@authentication_router.post("/signup-contractor")
+async def signup(signup: SignUpContractor):
+    id = str(uuid.uuid4())
+    signup.password = pbkdf2_sha256.hash(signup.password)
+    contractor = create_contractor(id, signup.model_dump())
+
+    return {"id": id, "contractor": contractor}

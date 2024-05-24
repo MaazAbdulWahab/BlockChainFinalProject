@@ -27,3 +27,10 @@ def finduser(username: str, password: str):
         return user
     else:
         return None
+
+
+def create_contractor(id: str, contractor):
+    newAddress = mc.getnewaddress()
+    contractor.update({"address": newAddress})
+    mc.publish(streamContractors, id, {"json": contractor})
+    return contractor
