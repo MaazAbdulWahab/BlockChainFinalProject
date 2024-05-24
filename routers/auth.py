@@ -1,7 +1,7 @@
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException, status
-from utils.user.fakedb import finduser
+from utils.user.user_utils import finduser
 from utils.auth.jwt import create_access_token
 from typings import PasswordChangeRequest
 
@@ -24,8 +24,3 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     access_token = create_access_token({"id": foundUser["id"]})
     return {"access_token": access_token}
-
-
-@authentication_router.put("/change-password")
-async def changePassword(passwordChange: PasswordChangeRequest):
-    pass

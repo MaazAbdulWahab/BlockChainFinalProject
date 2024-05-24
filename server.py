@@ -4,6 +4,7 @@ from routers.contractors import contractors_router
 from routers.auth import authentication_router
 from utils.auth.dependencies import require_role
 from fastapi import Depends
+from utils.chain.multichainclient import mc
 
 
 app = FastAPI(
