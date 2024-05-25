@@ -25,7 +25,7 @@ class Bid(BaseModel):
 
     id: Optional[str]
     contract_id: str
-    contractor_id: str
+    contractor_id: Optional[str]
     remarks: str
     bid_price: float
     expected_complete_till: datetime
@@ -44,6 +44,8 @@ class Deliverable(BaseModel):
 
     id: Optional[str]
     award_id: str
+    created_by: Optional[str]
+    created_by_address = Optional[str]
     deliverable_text: str
     deliverable_expected_complete_till: datetime
 

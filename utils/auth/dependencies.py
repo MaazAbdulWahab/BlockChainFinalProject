@@ -24,10 +24,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 def require_role(required_role: Union[str, List[str]]):
     def role_checker(current_user=Depends(get_current_user)):
-        print("CURRENT USER COMING TO BE")
-
-        print(current_user)
-        if current_user.get("role") != required_role:
+        if not isinstance(required_role, list):
+            required_role = [required_role]
+        if current_user.get("role") not in required_role:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You do not have access to this resource",

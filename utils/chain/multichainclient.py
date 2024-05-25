@@ -16,6 +16,10 @@ mc = MultiChainClient(
 streamEmployees = "EMPLOYEES_STREAM"
 streamContractors = "CONTRACTORS_STREAM"
 streamContractorsVerification = "CONTRACTORS_VERIFICATION"
+streamContracts = "CONTRACTS"
+streamBids = "BIDS"
+streamDeliverables = "DELIVERABLES"
+streamAwards = "AWARDS"
 
 
 if not mc.liststreams(streamEmployees):
@@ -29,3 +33,15 @@ if not mc.liststreams(streamContractors):
 if not mc.liststreams(streamContractorsVerification):
     mc.create("stream", streamContractorsVerification, True)
     mc.subscribe(streamContractorsVerification)
+
+if not mc.liststreams(streamContracts):
+    mc.create("stream", streamContracts, True)
+    mc.subscribe(streamContracts)
+
+if not mc.liststreams(streamBids):
+    mc.create("stream", streamBids, True)
+    mc.subscribe(streamBids)
+
+if not mc.liststreams(streamDeliverables):
+    mc.create("stream", streamDeliverables, True)
+    mc.subscribe(streamDeliverables)

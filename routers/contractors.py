@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from typings import Bid, DeliverableCompletion
 from fastapi.security.oauth2 import OAuth2AuthorizationCodeBearer
+from utils.contracts.contract_utils import get_contracts, place_bid_, get_deliverables
+from utils.auth.dependencies import require_role
+import uuid
 
 contractors_router = APIRouter(
     prefix="/contractors",
@@ -9,12 +12,18 @@ contractors_router = APIRouter(
 
 
 @contractors_router.get("/view-open-contracts")
-async def view_open_contracts():
-    return
+async def view_open_contracts(user=Depends(require_role("CONTRACTOR"))):
+    return get_contracts()
 
 
-@contractors_router.post("/place-bid")
-async def place_bid(bid: Bid):
+@contractors_router.post("/place-bid/{contract_id}")
+async def place_bid(
+    bid: Bid, contract_id: str, user=Depends(require_role("CONTRACTOR"))
+):
+    bid.id = str(uuid.uuid4())
+    bid.contract_id = contract_id
+    bid.contractor_id = user["id"]
+    place_bid_(bid, user["address"])
     return bid
 
 
@@ -23,9 +32,16 @@ async def mark_deliverable_complete(dc: DeliverableCompletion):
     return dc
 
 
-@contractors_router.get("/view-deliverables")
-async def get_deliverables(active: bool = True, contract_id: str = None):
-    pass
+@contractors_router.get("/get-contracts-awarded")
+def get_awarded_contracts(user=Depends(require_role("CONTRACTOR"))):
+    return get_contracts()
+
+
+@contractors_router.get("/view-deliverables/{contract_id}")
+async def get_deliverables_(
+    contract_id: str = None, user=Depends(require_role("CONTRACTOR"))
+):
+    return get_deliverables(contract_id)
 
 
 @contractors_router.get("/view-awards")

@@ -1,12 +1,20 @@
 from fastapi import APIRouter
 from typings import Contract, ContractAward, Deliverable, MarkDeliverableCompletion
-from typing import List
+from typing import List, Union
 from datetime import datetime
 from uuid import uuid4
 from utils.user.user_utils import all_contractors, update_contractor
 from utils.auth.dependencies import require_role
 from fastapi import Depends
 from utils.chain.multichainclient import mc
+from utils.contracts.contract_utils import (
+    post_contracts,
+    get_contracts,
+    get_bids,
+    create_deliverables_,
+    get_deliverables,
+)
+import uuid
 
 organization_router = APIRouter(
     prefix="/organization",
@@ -15,14 +23,18 @@ organization_router = APIRouter(
 
 
 @organization_router.get("/get-contractors")
-async def get_contractors(id: str = None, user=Depends(require_role("EMPLOYEE"))):
+async def get_contractors(
+    id: str = None, user=Depends(require_role(["EMPLOYEE", "MANAGER"]))
+):
     print("user is")
     print(user)
     return all_contractors(id)
 
 
 @organization_router.put("/verify-contractor/{contractor_id}")
-async def verify_contractor(contractor_id: str, user=Depends(require_role("EMPLOYEE"))):
+async def verify_contractor(
+    contractor_id: str, user=Depends(require_role(["EMPLOYEE", "MANAGER"]))
+):
     contractor = all_contractors(contractor_id)
     signature = mc.signmessage(user["address"], "VERIFIED")
     verification_data = {
@@ -37,7 +49,9 @@ async def verify_contractor(contractor_id: str, user=Depends(require_role("EMPLO
 
 
 @organization_router.post("/post-contract")
-async def post_contract(contract: Contract):
+async def post_contract(contract: Contract, user=Depends(require_role("EMPLOYEE"))):
+    contract.id = str(uuid.uuid4())
+    post_contracts(contract, user["address"])
     return contract
 
 
@@ -51,12 +65,14 @@ async def view_contracts(
     complete_till__lte: datetime = None,
 ):
 
-    return {"contracts": []}
+    return get_contracts()
 
 
 @organization_router.get("/view-bids/{contract_id}")
-async def view_bids(contract_id: str):
-    return
+async def view_bids(
+    contract_id: str, user=Depends(require_role(["EMPLOYEE", "MANAGER"]))
+):
+    return get_bids(contract_id)
 
 
 @organization_router.post("/award-contract")
@@ -64,14 +80,24 @@ async def award_contract(contract_award: ContractAward):
     return contract_award
 
 
-@organization_router.post("/create-deliverables/{contract_id}")
-async def create_deliverables(deliverables: List[Deliverable]):
+@organization_router.post("/create-deliverables/")
+async def create_deliverables(
+    deliverables: List[Deliverable],
+    user=Depends(require_role("EMPLOYEE")),
+):
+    for d in deliverables:
+        d.id = str(uuid.uuid4())
+        d.created_by = user["id"]
+        d.created_by_address = user["address"]
+    create_deliverables_(deliverables, user["address"])
     return deliverables
 
 
 @organization_router.post("/view-deliverables/{contract_id}")
-async def view_deliverables(contract_id: str):
-    pass
+async def view_deliverables(
+    contract_id: str, user=Depends(require_role(["EMPLOYEE", "MANAGER"]))
+):
+    return get_deliverables(contract_id)
 
 
 @organization_router.post("mark-deliverable-complete")
