@@ -49,3 +49,5 @@ data = {
 for i in data:
     mc.publish(streamEmployees, i, {"json": data[i]})
 """
+
+pprint.pp(mc.liststreamkeyitems(streamEmployees, "1"))

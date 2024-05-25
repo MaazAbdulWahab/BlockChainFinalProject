@@ -1,7 +1,8 @@
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from utils.auth.jwt import decode_access_token
-from utils.user.fakedb import getuser
+from utils.user.user_utils import getuser
+from typing import List, Union
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="authentication/login")
 
@@ -21,7 +22,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-def require_role(required_role: str):
+def require_role(required_role: Union[str, List[str]]):
     def role_checker(current_user=Depends(get_current_user)):
         print("CURRENT USER COMING TO BE")
 

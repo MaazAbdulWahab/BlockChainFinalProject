@@ -3,11 +3,37 @@ from typings import Contract, ContractAward, Deliverable, MarkDeliverableComplet
 from typing import List
 from datetime import datetime
 from uuid import uuid4
+from utils.user.user_utils import all_contractors, update_contractor
+from utils.auth.dependencies import require_role
+from fastapi import Depends
+from utils.chain.multichainclient import mc
 
 organization_router = APIRouter(
     prefix="/organization",
     tags=["organization"],
 )
+
+
+@organization_router.get("/get-contractors")
+async def get_contractors(id: str = None, user=Depends(require_role("EMPLOYEE"))):
+    print("user is")
+    print(user)
+    return all_contractors(id)
+
+
+@organization_router.put("/verify-contractor/{contractor_id}")
+async def verify_contractor(contractor_id: str, user=Depends(require_role("EMPLOYEE"))):
+    contractor = all_contractors(contractor_id)
+    signature = mc.signmessage(user["address"], "VERIFIED")
+    verification_data = {
+        "verified": True,
+        "verified_by_id": user["id"],
+        "verified_by_address": user["address"],
+        "signature": signature,
+    }
+
+    update_contractor(contractor_id, verification_data)
+    return contractor
 
 
 @organization_router.post("/post-contract")
