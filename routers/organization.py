@@ -1,5 +1,11 @@
 from fastapi import APIRouter
-from typings import Contract, ContractAward, Deliverable, MarkDeliverableCompletion
+from typings import (
+    Contract,
+    ContractAward,
+    Deliverable,
+    MarkDeliverableCompletion,
+    VerifyAward,
+)
 from typing import List, Union
 from datetime import datetime
 from uuid import uuid4
@@ -14,6 +20,8 @@ from utils.contracts.contract_utils import (
     create_deliverables_,
     get_deliverables,
     get_completed_deliverables,
+    mark_deliverable_as_complete,
+    award_contract_,
 )
 import uuid
 
@@ -77,7 +85,30 @@ async def view_bids(
 
 
 @organization_router.post("/award-contract")
-async def award_contract(contract_award: ContractAward):
+async def award_contract(
+    contract_award: ContractAward,
+    user=Depends(require_role("EMPLOYEE")),
+):
+    signature = mc.signmessage(user["address"], "AWARDED")
+    contract_award.id = str(uuid.uuid4())
+    contract_award.signature = signature
+    contract_award.awarded_by_address = user["addres"]
+    contract_award.awarded_by = user["id"]
+    award_contract_(contract_award, user["address"])
+    return contract_award
+
+
+@organization_router.post("/verify-award")
+async def verify_award(
+    contract_award: VerifyAward,
+    user=Depends(require_role("MANAGER")),
+):
+    signature = mc.signmessage(user["address"], "AWARDED")
+    contract_award.id = str(uuid.uuid4())
+    contract_award.signature = signature
+    contract_award.verified_by_address = user["addres"]
+    contract_award.verified_by = user["id"]
+    award_contract_(contract_award, user["address"])
     return contract_award
 
 
@@ -113,4 +144,10 @@ async def mark_deliverable_complete(
     mark: MarkDeliverableCompletion,
     user=Depends(require_role("EMPLOYEE")),
 ):
-    pass
+    signature = mc.signmessage(user["address"], "COMPLETED")
+    mark.id = str(uuid.uuid4())
+    mark.signature = signature
+    mark.marked_by_address = user["addres"]
+    mark.marked_by = user["id"]
+    mark_deliverable_as_complete(mark, user["address"])
+    return mark

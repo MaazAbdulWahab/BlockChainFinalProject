@@ -20,7 +20,9 @@ streamContracts = "CONTRACTS"
 streamBids = "BIDS"
 streamDeliverables = "DELIVERABLES"
 streamAwards = "AWARDS"
+streamAwardsVerify = "AWARDS_VERIFY"
 streamDeliverableCompletion = "DELIVERABLE_COMPLETION"
+streamDeliveryMarkCompletion = "DELIVERABLE_MARK_COMPLETION"
 
 
 if not mc.liststreams(streamEmployees):
@@ -54,3 +56,13 @@ if not mc.liststreams(streamAwards):
 if not mc.liststreams(streamDeliverableCompletion):
     mc.create("stream", streamDeliverableCompletion, True)
     mc.subscribe(streamDeliverableCompletion)
+
+
+if not mc.liststreams(streamDeliveryMarkCompletion):
+    mc.create("stream", streamDeliveryMarkCompletion, True)
+    mc.subscribe(streamDeliveryMarkCompletion)
+
+
+if not mc.liststreams(streamAwardsVerify):
+    mc.create("stream", streamAwardsVerify, True)
+    mc.subscribe(streamAwardsVerify)

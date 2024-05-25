@@ -38,6 +38,19 @@ class ContractAward(BaseModel):
     bid_id: str
     remarks: str
     awarded_on: datetime
+    awarded_by: Optional[str]
+    awarded_by_address: Optional[str]
+    signature: Optional[str]
+
+
+class VerifyAward(BaseModel):
+    id: Optional[str]
+    award_id: str
+    remarks: str
+    verified_on: datetime
+    verified_by: Optional[str]
+    verified_by_address: Optional[str]
+    signature: Optional[str]
 
 
 class Deliverable(BaseModel):
