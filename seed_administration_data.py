@@ -49,16 +49,3 @@ data = {
 for i in data:
     mc.publish(streamEmployees, i, {"json": data[i]})
 """
-
-pprint.pp(
-    mc.createmultisig(
-        2,
-        [
-            "1BhFcjofTJXn8CWkduXA9vxbZv9ujd8PK7ZANF",
-            "19eS7hQ9NaeiSLJY4cyZmVzYmW6hNdKig6XBJf",
-        ],
-    )
-)
-
-pprint.pp(mc.signmessage("4AMvwUo7jgGLLexGXR7jmBFD5zPhAkHqhwSspV", "HELLO"))
-pprint.pp(mc.validateaddress("4AMvwUo7jgGLLexGXR7jmBFD5zPhAkHqhwSspV"))

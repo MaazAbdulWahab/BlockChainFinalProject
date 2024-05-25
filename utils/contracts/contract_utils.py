@@ -4,8 +4,9 @@ from utils.chain.multichainclient import (
     streamBids,
     streamDeliverables,
     streamAwards,
+    streamDeliverableCompletion,
 )
-from typings import Contract, Bid, Deliverable
+from typings import Contract, Bid, Deliverable, DeliverableCompletion
 from typing import List
 import json
 
@@ -78,6 +79,7 @@ def get_deliverables(contract_id):
             award = award_data
     deliverable_list = []
     deliverables = mc.liststreamitems(streamDeliverables)
+    deliverables_completion = mc.liststreamitems(streamDeliverableCompletion)
     for dw in deliverables:
 
         deliverable_data = dw["data"]["json"]
@@ -85,6 +87,49 @@ def get_deliverables(contract_id):
         deliverable_id = dw["keys"][0]
         deliverable_data.update({"id": deliverable_id})
         if deliverable_data["award_id"] == award["id"]:
+
+            for ddc in deliverables_completion:
+
+                ddc_data = ddc["data"]["json"]
+                ddc_data = json.loads(json.dumps(ddc_data))
+                ddc_id = ddc["keys"][0]
+                ddc_data.update({"id": ddc_id})
+                if deliverable_data["deliverable_id"] == deliverable_data["id"]:
+                    deliverable_data.update(
+                        {
+                            "deliverable_completion": {
+                                "deliverable_complete": ddc_data[
+                                    "deliverable_complete"
+                                ],
+                                "remarks": ddc_data["remarks"],
+                                "cost": ddc_data["cost"],
+                                "documents": ddc_data["documents"],
+                                "completed": ddc_data["completed"],
+                            }
+                        }
+                    )
+                    break
+
             deliverable_list.append(deliverable_data)
 
     return deliverable_list
+
+
+def submit_deliverable_completion(com: DeliverableCompletion, address: str):
+    comp = com.model_dump()
+    id = com["id"]
+    del com["id"]
+    mc.publishfrom(address, streamDeliverableCompletion, id, {"json": com})
+
+
+def get_completed_deliverables():
+    deliverables_completion = mc.liststreamitems(streamDeliverableCompletion)
+    deliverables_completion_list = []
+    for ddc in deliverables_completion:
+
+        ddc_data = ddc["data"]["json"]
+        ddc_data = json.loads(json.dumps(ddc_data))
+        ddc_id = ddc["keys"][0]
+        ddc_data.update({"id": ddc_id})
+        deliverables_completion_list.append(ddc_data)
+    return deliverables_completion_list

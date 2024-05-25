@@ -56,6 +56,9 @@ class DeliverableCompletion(BaseModel):
     deliverable_id: str
     deliverable_complete: datetime
     remarks: str
+    cost: float
+    documents: List[str]
+    completed: bool = True
 
 
 class MarkDeliverableCompletion(BaseModel):
@@ -63,6 +66,9 @@ class MarkDeliverableCompletion(BaseModel):
     completed_deliverable_id: str
     remarks: str
     marked_on: datetime
+    marked_by: Optional[str]
+    marked_by_address: Optional[str]
+    signature: Optional[str]
 
 
 class PasswordChangeRequest(BaseModel):

@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends
 from typings import Bid, DeliverableCompletion
 from fastapi.security.oauth2 import OAuth2AuthorizationCodeBearer
-from utils.contracts.contract_utils import get_contracts, place_bid_, get_deliverables
+from utils.contracts.contract_utils import (
+    get_contracts,
+    place_bid_,
+    get_deliverables,
+    submit_deliverable_completion,
+)
 from utils.auth.dependencies import require_role
 import uuid
 
@@ -28,7 +33,11 @@ async def place_bid(
 
 
 @contractors_router.post("/mark-deliverable-complete")
-async def mark_deliverable_complete(dc: DeliverableCompletion):
+async def mark_deliverable_complete(
+    dc: DeliverableCompletion, user=Depends(require_role("CONTRACTOR"))
+):
+    dc.id = str(uuid.uuid4())
+    submit_deliverable_completion(dc, user["address"])
     return dc
 
 

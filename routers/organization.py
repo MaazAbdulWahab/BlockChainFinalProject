@@ -13,6 +13,7 @@ from utils.contracts.contract_utils import (
     get_bids,
     create_deliverables_,
     get_deliverables,
+    get_completed_deliverables,
 )
 import uuid
 
@@ -100,6 +101,16 @@ async def view_deliverables(
     return get_deliverables(contract_id)
 
 
+@organization_router.get("/view-completed-deliverables")
+async def get_completed_deliverables_(
+    user=Depends(require_role(["EMPLOYEE", "MANAGER"]))
+):
+    return get_completed_deliverables()
+
+
 @organization_router.post("mark-deliverable-complete")
-async def mark_deliverable_complete(mark: MarkDeliverableCompletion):
+async def mark_deliverable_complete(
+    mark: MarkDeliverableCompletion,
+    user=Depends(require_role("EMPLOYEE")),
+):
     pass
