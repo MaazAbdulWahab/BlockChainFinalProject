@@ -144,7 +144,7 @@ async def get_completed_deliverables_(
     return get_completed_deliverables()
 
 
-@organization_router.post("mark-deliverable-complete")
+@organization_router.post("/mark-deliverable-complete")
 async def mark_deliverable_complete(
     mark: MarkDeliverableCompletion,
     user=Depends(require_role("EMPLOYEE")),
@@ -165,22 +165,22 @@ async def mark_deliverable_complete(
     contractor = getuser(cd["contractor_id"])
     mc.issue(
         contractor["address"],
-        {"name": "NFTDELIVERABLECOMPLETION", "fungible": False, "open": True},
+        {"name": "NFTCOMPLETION", "fungible": False, "open": True},
         0,
     )
 
     mc.issuetoken(
         contractor["address"],
-        "NFTDELIVERABLECOMPLETION",
+        "NFTCOMPLETION",
         f"token{str(uuid.uuid4())}",
-        mark.tokens,
+        int(mark.tokens),
         0,
     )
 
     return mark
 
 
-@organization_router.post("mark-contract-complete")
+@organization_router.post("/mark-contract-complete")
 async def mark_contract_complete(
     mark: ContractCompletion,
     user=Depends(require_role("MANAGER")),

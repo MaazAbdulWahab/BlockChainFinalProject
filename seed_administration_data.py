@@ -1,6 +1,7 @@
 from utils.chain.multichainclient import mc, streamEmployees
 import pprint
 from passlib.hash import pbkdf2_sha256
+import uuid
 
 """
 for i in range(5):
@@ -108,5 +109,24 @@ pprint.pp(
 #       {"NFTREAL": {"token": "token1", "qty": 1}},
 #   )
 # )
+
+pprint.pp(
+    mc.issue(
+        "1SbL4BvueQrNVnnAoQaJKp466kDe143Q71xD2",
+        {"name": "NFTDELIVERABLECOMPLETION", "fungible": False, "open": True},
+        0,
+    )
+)
+
+pprint.pp(
+    mc.issuetoken(
+        "1SbL4BvueQrNVnnAoQaJKp466kDe143Q71xD2",
+        "NFTDELIVERABLECOMPLETION",
+        f"token{str(uuid.uuid4())}",
+        6,
+        0,
+    )
+)
+
 
 pprint.pp(mc.gettokenbalances("1SbL4BvueQrNVnnAoQaJKp466kDe143Q71xD2"))
