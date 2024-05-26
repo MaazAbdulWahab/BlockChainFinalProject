@@ -179,16 +179,14 @@ def create_deliverables_(deliverables: List[Deliverable], address: str):
 
 def get_deliverables(contract_id):
     award = None
-    awards = mc.liststreamitems(streamDeliverables)
+    awards = get_awards()
 
     for aw in awards:
 
-        award_data = aw["data"]["json"]
-        award_data = json.loads(json.dumps(award_data))
-        award_id = aw["keys"][0]
-        award_data.update({"id": award_id})
-        if award_data["contract_id"] == contract_id:
-            award = award_data
+        if aw.get("contract_id") == contract_id and aw.get("award_verified"):
+            award = aw
+            break
+
     deliverable_list = []
     deliverables = mc.liststreamitems(streamDeliverables)
     deliverables_completion = mc.liststreamitems(streamDeliverableCompletion)
@@ -208,7 +206,7 @@ def get_deliverables(contract_id):
                 ddc_data = json.loads(json.dumps(ddc_data))
                 ddc_id = ddc["keys"][0]
                 ddc_data.update({"id": ddc_id})
-                if deliverable_data["deliverable_id"] == deliverable_data["id"]:
+                if ddc_data["deliverable_id"] == deliverable_data["id"]:
 
                     for dmc in deliverables_marked_completed:
                         dmc_data = dmc["data"]["json"]
@@ -219,7 +217,7 @@ def get_deliverables(contract_id):
                             ddc_data.update({"delivery_completed_marked": dmc_data})
                             break
 
-                    deliverable_data.update({"deliverable_completion": {ddc_data}})
+                    deliverable_data.update({"deliverable_completion": ddc_data})
                     break
 
             deliverable_list.append(deliverable_data)

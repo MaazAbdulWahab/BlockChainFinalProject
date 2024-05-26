@@ -71,7 +71,7 @@ def getuser(id: str):
 
 def create_contractor(id: str, contractor):
     newAddress = mc.getnewaddress()
-    mc.grant(newAddress, "send,receive")
+    mc.grant(newAddress, "issue,send,receive")
     contractor.update({"address": newAddress})
     mc.publish(streamContractors, id, {"json": contractor})
     return contractor

@@ -152,7 +152,7 @@ async def mark_deliverable_complete(
     signature = mc.signmessage(user["address"], "COMPLETED")
     mark.id = str(uuid.uuid4())
     mark.signature = signature
-    mark.marked_by_address = user["addres"]
+    mark.marked_by_address = user["address"]
     mark.marked_by = user["id"]
     mark_deliverable_as_complete(mark, user["address"])
     completed_deliverables = get_completed_deliverables()

@@ -9,6 +9,7 @@ from utils.contracts.contract_utils import (
 )
 from utils.auth.dependencies import require_role
 import uuid
+from utils.chain.multichainclient import mc
 
 contractors_router = APIRouter(
     prefix="/contractors",
@@ -54,5 +55,5 @@ async def get_deliverables_(
 
 
 @contractors_router.get("/view-awards")
-async def get_awards(active: bool = True):
-    pass
+async def get_rewards(user=Depends(require_role("CONTRACTOR"))):
+    return mc.gettokenbalances(user["address"])

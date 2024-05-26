@@ -69,10 +69,10 @@ class DeliverableCompletion(BaseModel):
 
     id: Optional[str]
     deliverable_id: str
-    deliverable_complete: str
     contractor_id: str
     remarks: str
     cost: float
+    completed_on: str
     documents: List[str]
     completed: bool = True
 
