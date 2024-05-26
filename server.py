@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from routers.organization import organization_router
 from routers.contractors import contractors_router
 from routers.auth import authentication_router
-from utils.auth.dependencies import require_role
+from utils.auth.dependencies import require_role, RoleChecker
 from fastapi import Depends
 from utils.chain.multichainclient import mc
 
@@ -24,5 +24,5 @@ app.include_router(authentication_router)
 
 
 @app.get("/hello")
-async def hello(token: str = Depends(require_role("admin"))):
+async def hello(token: str = Depends(RoleChecker(["MANAGER", "CONTRACTOR"]))):
     return {"success": True}
