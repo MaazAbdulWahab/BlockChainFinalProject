@@ -17,8 +17,8 @@ class Contract(BaseModel):
     description: str
     price: float
     currency: Currency
-    valid_till: datetime
-    complete_till: datetime
+    valid_till: str
+    complete_till: str
 
 
 class Bid(BaseModel):
@@ -28,7 +28,7 @@ class Bid(BaseModel):
     contractor_id: Optional[str]
     remarks: str
     bid_price: float
-    expected_complete_till: datetime
+    expected_complete_till: str
 
 
 class ContractAward(BaseModel):
@@ -38,7 +38,7 @@ class ContractAward(BaseModel):
     contractor_id: str
     bid_id: str
     remarks: str
-    awarded_on: datetime
+    awarded_on: str
     awarded_by: Optional[str]
     awarded_by_address: Optional[str]
     signature: Optional[str]
@@ -48,7 +48,7 @@ class VerifyAward(BaseModel):
     id: Optional[str]
     award_id: str
     remarks: str
-    verified_on: datetime
+    verified_on: str
     verified_by: Optional[str]
     verified_by_address: Optional[str]
     signature: Optional[str]
@@ -60,16 +60,16 @@ class Deliverable(BaseModel):
     award_id: str
     contractor_id: str
     created_by: Optional[str]
-    created_by_address = Optional[str]
+    created_by_address: Optional[str]
     deliverable_text: str
-    deliverable_expected_complete_till: datetime
+    deliverable_expected_complete_till: str
 
 
 class DeliverableCompletion(BaseModel):
 
     id: Optional[str]
     deliverable_id: str
-    deliverable_complete: datetime
+    deliverable_complete: str
     contractor_id: str
     remarks: str
     cost: float
@@ -81,7 +81,7 @@ class MarkDeliverableCompletion(BaseModel):
     id: Optional[str]
     completed_deliverable_id: str
     remarks: str
-    marked_on: datetime
+    marked_on: str
     marked_by: Optional[str]
     marked_by_address: Optional[str]
     signature: Optional[str]
@@ -106,7 +106,7 @@ class ContractCompletion(BaseModel):
     id: Optional[str]
     contract_id: str
     remarks: str
-    marked_on: datetime
+    marked_on: str
     marked_by: Optional[str]
     marked_by_address: Optional[str]
     signature: Optional[str]

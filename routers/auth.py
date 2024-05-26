@@ -6,6 +6,7 @@ from utils.auth.jwt import create_access_token
 from typings import PasswordChangeRequest, SignUpContractor
 import uuid
 from passlib.hash import pbkdf2_sha256
+from utils.auth.dependencies import require_role
 
 
 authentication_router = APIRouter(
@@ -35,3 +36,8 @@ async def signup(signup: SignUpContractor):
     contractor = create_contractor(id, signup.model_dump())
 
     return {"id": id, "contractor": contractor}
+
+
+@authentication_router.get("/me")
+async def me(user=Depends(require_role(["EMPLOYEE", "MANAGER", "CONTARCTOR"]))):
+    return user

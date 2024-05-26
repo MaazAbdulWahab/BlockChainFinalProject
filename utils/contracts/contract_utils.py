@@ -27,7 +27,7 @@ def post_contracts(contract: Contract, address: str):
     contract = contract.model_dump()
     id = contract["id"]
     del contract["id"]
-    mc.publishfrom(address, streamContracts, id, {"json": contract})
+    mc.publish(streamContracts, id, {"json": contract})
 
 
 def get_awards():
@@ -114,10 +114,10 @@ def get_contracts(contract_id_: str = None, only_active: bool = False):
 
 
 def place_bid_(bid: Bid, address: str):
-    contract = contract.model_dump()
-    id = contract["id"]
-    del contract["id"]
-    mc.publishfrom(address, streamBids, id, {"json": contract})
+    bid = bid.model_dump()
+    id = bid["id"]
+    del bid["id"]
+    mc.publish(streamBids, id, {"json": bid})
 
 
 def get_bids(contract_id):
@@ -133,21 +133,21 @@ def get_bids(contract_id):
         if bid_data["contract_id"] == contract_id:
             bids_list.append(bid_data)
 
-    return bid_data
+    return bids_list
 
 
 def award_contract_(award: ContractAward, address: str):
     award = award.model_dump()
     id = award["id"]
     del award["id"]
-    mc.publishfrom(address, streamAwards, id, {"json": award})
+    mc.publish(streamAwards, id, {"json": award})
 
 
 def verify_award_(award: VerifyAward, address: str):
     award = award.model_dump()
     id = award["id"]
     del award["id"]
-    mc.publishfrom(address, streamAwardsVerify, id, {"json": award})
+    mc.publish(streamAwardsVerify, id, {"json": award})
 
 
 def create_deliverables_(deliverables: List[Deliverable], address: str):
@@ -155,7 +155,7 @@ def create_deliverables_(deliverables: List[Deliverable], address: str):
         deli = d.model_dump()
         id = deli["id"]
         del deli["id"]
-        mc.publishfrom(address, streamDeliverables, id, {"json": deli})
+        mc.publish(streamDeliverables, id, {"json": deli})
 
 
 def get_deliverables(contract_id):
@@ -212,7 +212,7 @@ def submit_deliverable_completion(com: DeliverableCompletion, address: str):
     com = com.model_dump()
     id = com["id"]
     del com["id"]
-    mc.publishfrom(address, streamDeliverableCompletion, id, {"json": com})
+    mc.publish(streamDeliverableCompletion, id, {"json": com})
 
 
 def get_completed_deliverables():
@@ -244,11 +244,11 @@ def mark_deliverable_as_complete(comp: MarkDeliverableCompletion, address: str):
     comp = comp.model_dump()
     id = comp["id"]
     del comp["id"]
-    mc.publishfrom(address, streamDeliveryMarkCompletion, id, {"json": comp})
+    mc.publish(streamDeliveryMarkCompletion, id, {"json": comp})
 
 
 def mark_contract_as_complete(comp: ContractCompletion, address: str):
     comp = comp.model_dump()
     id = comp["id"]
     del comp["id"]
-    mc.publishfrom(address, streamContractComplete, id, {"json": comp})
+    mc.publish(streamContractComplete, id, {"json": comp})

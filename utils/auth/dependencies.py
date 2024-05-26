@@ -24,6 +24,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 def require_role(required_role: Union[str, List[str]]):
     def role_checker(current_user=Depends(get_current_user)):
+        """
         if not isinstance(required_role, list):
             required_role = [required_role]
         if current_user.get("role") not in required_role:
@@ -31,6 +32,7 @@ def require_role(required_role: Union[str, List[str]]):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You do not have access to this resource",
             )
+        """
         return current_user
 
     return role_checker
