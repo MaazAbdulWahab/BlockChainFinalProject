@@ -45,7 +45,7 @@ class RoleChecker:
     def __call__(self, current_user=Depends(get_current_user)):
 
         if not isinstance(self.required_roles, list):
-            self.required_role = [self.required_role]
+            self.required_roles = [self.required_roles]
         if current_user["role"] not in self.required_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
