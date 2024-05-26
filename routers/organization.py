@@ -26,6 +26,7 @@ from utils.contracts.contract_utils import (
     award_contract_,
     get_awards,
     mark_contract_as_complete,
+    verify_award_,
 )
 import uuid
 
@@ -89,7 +90,7 @@ async def award_contract(
     signature = mc.signmessage(user["address"], "AWARDED")
     contract_award.id = str(uuid.uuid4())
     contract_award.signature = signature
-    contract_award.awarded_by_address = user["addres"]
+    contract_award.awarded_by_address = user["address"]
     contract_award.awarded_by = user["id"]
     award_contract_(contract_award, user["address"])
     return contract_award
@@ -110,9 +111,9 @@ async def verify_award(
     signature = mc.signmessage(user["address"], "VERIFIED_AWARDED")
     contract_award.id = str(uuid.uuid4())
     contract_award.signature = signature
-    contract_award.verified_by_address = user["addres"]
+    contract_award.verified_by_address = user["address"]
     contract_award.verified_by = user["id"]
-    award_contract_(contract_award, user["address"])
+    verify_award_(contract_award, user["address"])
     return contract_award
 
 

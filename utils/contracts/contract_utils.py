@@ -34,6 +34,7 @@ def get_awards():
     awards = mc.liststreamitems(streamAwards)
     awards_verified = mc.liststreamitems(streamAwardsVerify)
     awards_list = []
+    print("COMING HERE")
     for aw in awards:
 
         aw_data = aw["data"]["json"]
@@ -70,7 +71,9 @@ def get_contract_completion():
     return completion_list
 
 
-def get_contracts(contract_id_: str = None, only_active: bool = False):
+def get_contracts(
+    contract_id_: str = None, only_active: bool = False, contractor_id: str = None
+):
 
     contracts_list = []
     contracts_list_final = []
@@ -85,7 +88,7 @@ def get_contracts(contract_id_: str = None, only_active: bool = False):
         contract.update({"id": contract_id})
         awards_of_this = []
         for aw in awards:
-            if aw["contract_id"] == contract_id:
+            if aw.get("contract_id") == contract_id:
                 awards_of_this.append(aw)
         for cm in completions:
             if cm["contract_id"] == contract_id:
@@ -99,6 +102,22 @@ def get_contracts(contract_id_: str = None, only_active: bool = False):
         if contract_id_:
             if cli["id"] != contract_id_:
                 continue
+        if contractor_id:
+            if cli.get("awards"):
+                awards_of_this_cli = cli.get("awards")
+                award_of_this_contractor = None
+                for awwww in awards_of_this_cli:
+                    if awwww["contractor_id"] == contractor_id:
+                        award_of_this_contractor = awwww
+                        break
+
+                if (
+                    not awards_of_this_cli
+                    or not award_of_this_contractor
+                    or not award_of_this_contractor.get("award_verified")
+                ):
+                    continue
+
         if only_active:
             if cli.get("awards"):
                 awards_of_this_cli = cli.get("awards")

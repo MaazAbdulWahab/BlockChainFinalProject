@@ -43,7 +43,7 @@ async def mark_deliverable_complete(
 
 @contractors_router.get("/get-contracts-awarded")
 def get_awarded_contracts(user=Depends(require_role("CONTRACTOR"))):
-    return get_contracts()
+    return get_contracts(contractor_id=user["id"])
 
 
 @contractors_router.get("/view-deliverables/{contract_id}")
