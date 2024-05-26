@@ -18,7 +18,7 @@ contractors_router = APIRouter(
 
 @contractors_router.get("/view-open-contracts")
 async def view_open_contracts(user=Depends(require_role("CONTRACTOR"))):
-    return get_contracts()
+    return get_contracts(only_active=True)
 
 
 @contractors_router.post("/place-bid/{contract_id}")

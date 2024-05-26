@@ -35,6 +35,7 @@ class ContractAward(BaseModel):
 
     id: Optional[str]
     contract_id: str
+    contractor_id: str
     bid_id: str
     remarks: str
     awarded_on: datetime
@@ -57,6 +58,7 @@ class Deliverable(BaseModel):
 
     id: Optional[str]
     award_id: str
+    contractor_id: str
     created_by: Optional[str]
     created_by_address = Optional[str]
     deliverable_text: str
@@ -68,6 +70,7 @@ class DeliverableCompletion(BaseModel):
     id: Optional[str]
     deliverable_id: str
     deliverable_complete: datetime
+    contractor_id: str
     remarks: str
     cost: float
     documents: List[str]
@@ -82,6 +85,7 @@ class MarkDeliverableCompletion(BaseModel):
     marked_by: Optional[str]
     marked_by_address: Optional[str]
     signature: Optional[str]
+    tokens: float
 
 
 class PasswordChangeRequest(BaseModel):

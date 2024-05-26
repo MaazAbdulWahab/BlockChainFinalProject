@@ -14,6 +14,7 @@ from utils.user.user_utils import all_contractors, update_contractor
 from utils.auth.dependencies import require_role
 from fastapi import Depends
 from utils.chain.multichainclient import mc
+from utils.user.user_utils import getuser
 from utils.contracts.contract_utils import (
     post_contracts,
     get_contracts,
@@ -68,16 +69,9 @@ async def post_contract(contract: Contract, user=Depends(require_role("EMPLOYEE"
 
 
 @organization_router.get("/view-contracts")
-async def view_contracts(
-    contract_id: str = None,
-    active: bool = False,
-    awarded: bool = False,
-    contractor_id: str = None,
-    complete_till__gte: datetime = None,
-    complete_till__lte: datetime = None,
-):
+async def view_contracts(contract_id: str = None, only_active: bool = False):
 
-    return get_contracts()
+    return get_contracts(contract_id, only_active)
 
 
 @organization_router.get("/view-bids/{contract_id}")
@@ -160,6 +154,28 @@ async def mark_deliverable_complete(
     mark.marked_by_address = user["addres"]
     mark.marked_by = user["id"]
     mark_deliverable_as_complete(mark, user["address"])
+    completed_deliverables = get_completed_deliverables()
+    mine = None
+    for cd in completed_deliverables:
+        if cd["id"] == mark.completed_deliverable_id:
+            mine = cd
+            break
+
+    contractor = getuser(cd["contractor_id"])
+    mc.issue(
+        contractor["address"],
+        {"name": "NFTDELIVERABLECOMPLETION", "fungible": False, "open": True},
+        0,
+    )
+
+    mc.issuetoken(
+        contractor["address"],
+        "NFTDELIVERABLECOMPLETION",
+        f"token{str(uuid.uuid4())}",
+        mark.tokens,
+        0,
+    )
+
     return mark
 
 

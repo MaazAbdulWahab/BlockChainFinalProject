@@ -70,9 +70,10 @@ def get_contract_completion():
     return completion_list
 
 
-def get_contracts():
+def get_contracts(contract_id_: str = None, only_active: bool = False):
 
     contracts_list = []
+    contracts_list_final = []
     contracts = mc.liststreamitems(streamContracts)
     awards = get_awards()
     completions = get_contract_completion()
@@ -94,7 +95,22 @@ def get_contracts():
             contract.update({"awards": awards_of_this})
         contracts_list.append(contract)
 
-    return contracts_list
+    for cli in contracts_list:
+        if contract_id_:
+            if cli["id"] != contract_id_:
+                continue
+        if only_active:
+            if cli.get("awards"):
+                awards_of_this_cli = cli.get("awards")
+                any_verified_awards = list(
+                    map(lambda x: x.get("award_verified"), awards_of_this_cli)
+                )
+                if any(any_verified_awards):
+                    continue
+
+        contracts_list_final.append(cli)
+
+    return contracts_list_final
 
 
 def place_bid_(bid: Bid, address: str):
