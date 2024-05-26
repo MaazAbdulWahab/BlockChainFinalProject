@@ -7,6 +7,7 @@ from utils.chain.multichainclient import (
     streamDeliverableCompletion,
     streamDeliveryMarkCompletion,
     streamAwardsVerify,
+    streamContractComplete,
 )
 from typings import (
     Contract,
@@ -16,6 +17,7 @@ from typings import (
     MarkDeliverableCompletion,
     ContractAward,
     VerifyAward,
+    ContractCompletion,
 )
 from typing import List
 import json
@@ -53,11 +55,27 @@ def get_awards():
     return awards_list
 
 
+def get_contract_completion():
+    completions = mc.liststreamitems(streamContractComplete)
+    completion_list = []
+    for cm in completions:
+
+        cm_data = cm["data"]["json"]
+        cm_data = json.loads(json.dumps(cm_data))
+        cm_id = cm["keys"][0]
+        cm_data.update({"id": cm_id})
+
+        completion_list.append(cm_data)
+
+    return completion_list
+
+
 def get_contracts():
 
     contracts_list = []
     contracts = mc.liststreamitems(streamContracts)
     awards = get_awards()
+    completions = get_contract_completion()
     for con in contracts:
 
         con_data = con["data"]["json"]
@@ -68,6 +86,10 @@ def get_contracts():
         for aw in awards:
             if aw["contract_id"] == contract_id:
                 awards_of_this.append(aw)
+        for cm in completions:
+            if cm["contract_id"] == contract_id:
+                contract.update({"completion": cm})
+
         if len(awards_of_this) > 0:
             contract.update({"awards": awards_of_this})
         contracts_list.append(contract)
@@ -207,3 +229,10 @@ def mark_deliverable_as_complete(comp: MarkDeliverableCompletion, address: str):
     id = comp["id"]
     del comp["id"]
     mc.publishfrom(address, streamDeliveryMarkCompletion, id, {"json": comp})
+
+
+def mark_contract_as_complete(comp: ContractCompletion, address: str):
+    comp = comp.model_dump()
+    id = comp["id"]
+    del comp["id"]
+    mc.publishfrom(address, streamContractComplete, id, {"json": comp})

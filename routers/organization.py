@@ -5,6 +5,7 @@ from typings import (
     Deliverable,
     MarkDeliverableCompletion,
     VerifyAward,
+    ContractCompletion,
 )
 from typing import List, Union
 from datetime import datetime
@@ -22,6 +23,8 @@ from utils.contracts.contract_utils import (
     get_completed_deliverables,
     mark_deliverable_as_complete,
     award_contract_,
+    get_awards,
+    mark_contract_as_complete,
 )
 import uuid
 
@@ -98,12 +101,19 @@ async def award_contract(
     return contract_award
 
 
+@organization_router.get("/view-awards")
+async def view_awards(
+    user=Depends(require_role("MANAGER")),
+):
+    return get_awards()
+
+
 @organization_router.post("/verify-award")
 async def verify_award(
     contract_award: VerifyAward,
     user=Depends(require_role("MANAGER")),
 ):
-    signature = mc.signmessage(user["address"], "AWARDED")
+    signature = mc.signmessage(user["address"], "VERIFIED_AWARDED")
     contract_award.id = str(uuid.uuid4())
     contract_award.signature = signature
     contract_award.verified_by_address = user["addres"]
@@ -150,4 +160,18 @@ async def mark_deliverable_complete(
     mark.marked_by_address = user["addres"]
     mark.marked_by = user["id"]
     mark_deliverable_as_complete(mark, user["address"])
+    return mark
+
+
+@organization_router.post("mark-contract-complete")
+async def mark_contract_complete(
+    mark: ContractCompletion,
+    user=Depends(require_role("MANAGER")),
+):
+    signature = mc.signmessage(user["address"], "COMPLETED_CONTRACT")
+    mark.id = str(uuid.uuid4())
+    mark.signature = signature
+    mark.marked_by_address = user["addres"]
+    mark.marked_by = user["id"]
+    mark_contract_as_complete(mark, user["address"])
     return mark

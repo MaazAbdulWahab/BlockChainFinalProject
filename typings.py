@@ -96,3 +96,13 @@ class SignUpContractor(BaseModel):
     role: str = "CONTRACTOR"
     licenses: List[str]
     documents: List[str]
+
+
+class ContractCompletion(BaseModel):
+    id: Optional[str]
+    contract_id: str
+    remarks: str
+    marked_on: datetime
+    marked_by: Optional[str]
+    marked_by_address: Optional[str]
+    signature: Optional[str]
