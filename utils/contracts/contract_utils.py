@@ -31,8 +31,8 @@ def post_contracts(contract: Contract, address: str):
 
 
 def get_awards():
-    awards = mc.liststreamitems(streamAwards)
-    awards_verified = mc.liststreamitems(streamAwardsVerify)
+    awards = mc.liststreamitems(streamAwards, False, 99999)
+    awards_verified = mc.liststreamitems(streamAwardsVerify, False, 99999)
     awards_list = []
     print("COMING HERE")
     for aw in awards:
@@ -57,7 +57,7 @@ def get_awards():
 
 
 def get_contract_completion():
-    completions = mc.liststreamitems(streamContractComplete)
+    completions = mc.liststreamitems(streamContractComplete, False, 99999)
     completion_list = []
     for cm in completions:
 
@@ -77,7 +77,7 @@ def get_contracts(
 
     contracts_list = []
     contracts_list_final = []
-    contracts = mc.liststreamitems(streamContracts)
+    contracts = mc.liststreamitems(streamContracts, False, 99999)
     awards = get_awards()
     completions = get_contract_completion()
     for con in contracts:
@@ -141,7 +141,7 @@ def place_bid_(bid: Bid, address: str):
 
 def get_bids(contract_id):
     bids_list = []
-    bids = mc.liststreamitems(streamBids)
+    bids = mc.liststreamitems(streamBids, False, 99999)
 
     for bd in bids:
 
@@ -188,9 +188,13 @@ def get_deliverables(contract_id):
             break
 
     deliverable_list = []
-    deliverables = mc.liststreamitems(streamDeliverables)
-    deliverables_completion = mc.liststreamitems(streamDeliverableCompletion)
-    deliverables_marked_completed = mc.liststreamitems(streamDeliveryMarkCompletion)
+    deliverables = mc.liststreamitems(streamDeliverables, False, 99999)
+    deliverables_completion = mc.liststreamitems(
+        streamDeliverableCompletion, False, 99999
+    )
+    deliverables_marked_completed = mc.liststreamitems(
+        streamDeliveryMarkCompletion, False, 99999
+    )
 
     for dw in deliverables:
 
@@ -233,8 +237,12 @@ def submit_deliverable_completion(com: DeliverableCompletion, address: str):
 
 
 def get_completed_deliverables():
-    deliverables_completion = mc.liststreamitems(streamDeliverableCompletion)
-    deliverables_marked_completed = mc.liststreamitems(streamDeliveryMarkCompletion)
+    deliverables_completion = mc.liststreamitems(
+        streamDeliverableCompletion, False, 99999
+    )
+    deliverables_marked_completed = mc.liststreamitems(
+        streamDeliveryMarkCompletion, False, 99999
+    )
     deliverables_completion_list = []
     for ddc in deliverables_completion:
 
@@ -242,12 +250,13 @@ def get_completed_deliverables():
         ddc_data = json.loads(json.dumps(ddc_data))
         ddc_id = ddc["keys"][0]
         ddc_data.update({"id": ddc_id})
-
+        print(ddc_data["id"])
         for dmc in deliverables_marked_completed:
             dmc_data = dmc["data"]["json"]
             dmc_data = json.loads(json.dumps(dmc_data))
             dmc_id = dmc["keys"][0]
             dmc_data.update({"id": dmc_id})
+            print(dmc_data)
             if ddc_data["id"] == dmc_data["completed_deliverable_id"]:
                 ddc_data.update({"delivery_completed_marked": dmc_data})
                 break

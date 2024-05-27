@@ -10,7 +10,7 @@ from passlib.hash import pbkdf2_sha256
 
 def finduser(username: str, password: str):
     user = None
-    employees = mc.liststreamitems(streamEmployees)
+    employees = mc.liststreamitems(streamEmployees, False, 99999)
 
     for emp in employees:
         emp_data = emp["data"]["json"]
@@ -19,7 +19,7 @@ def finduser(username: str, password: str):
             user.update({"id": emp["keys"][0]})
             break
 
-    contractors = mc.liststreamitems(streamContractors)
+    contractors = mc.liststreamitems(streamContractors, False, 99999)
 
     for con in contractors:
         con_data = con["data"]["json"]
@@ -41,7 +41,7 @@ def finduser(username: str, password: str):
 
 def getuser(id: str):
     user = None
-    employees = mc.liststreamitems(streamEmployees)
+    employees = mc.liststreamitems(streamEmployees, False, 99999)
 
     for emp in employees:
 
@@ -51,7 +51,7 @@ def getuser(id: str):
             user.update({"id": emp["keys"][0]})
             break
 
-    contractors = mc.liststreamitems(streamContractors)
+    contractors = mc.liststreamitems(streamContractors, False, 99999)
 
     for con in contractors:
         if con["keys"][0] == id:
@@ -84,7 +84,7 @@ def update_contractor(id: str, contractor):
 
 
 def all_contractors(id: str = None):
-    contractors = mc.liststreamitems(streamContractors)
+    contractors = mc.liststreamitems(streamContractors, False, 99999)
     contractors_list = []
     for con in contractors:
 
